@@ -5,17 +5,14 @@ import { map, Observable } from "rxjs";
 import { CurrentUserInterface } from "../../shared/interfaces/currentUser.inteface";
 import { AuthResponseInterface } from "../interfaces/authResponse.interface";
 import { environment } from "../../../environments/environment.development";
+import { ApiServiceService } from "../../shared/services/api-service.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
-  http = inject(HttpClient);
+export class AuthService extends ApiServiceService {
 
-  register(data: RegisterRequestInterface): Observable<CurrentUserInterface> {
-    const url =`${environment.apiUrl}/Account/register`;
-    return this.http
-      .post<AuthResponseInterface>(url, data)
-      .pipe(map(response => response.user));
+  register(data: RegisterRequestInterface): Observable<AuthResponseInterface> {
+    return this.post<AuthResponseInterface>('Account/register', data)
   }
 }

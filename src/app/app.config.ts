@@ -10,7 +10,7 @@ import { authFeatureKey, authReducer } from './auth/store/reducers';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideEffects } from '@ngrx/effects';
 
-import * as registerEffect from './auth/store/effects';
+import * as authEffect from './auth/store/effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,9 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(withFetch()),
 
-    provideEffects(
-      registerEffect
-    ),
+    provideEffects(authEffect),
     provideStore(),
     provideStoreDevtools({
       maxAge: 25,

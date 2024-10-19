@@ -1,5 +1,7 @@
+import { BackendErrorsInterface } from "../../shared/interfaces/backendErrors.interface";
 import { CurrentUserInterface } from "../../shared/interfaces/currentUser.inteface";
 
 export interface AuthResponseInterface {
-  user: CurrentUserInterface
+  userId: string
+  errors: BackendErrorsInterface | null
 }

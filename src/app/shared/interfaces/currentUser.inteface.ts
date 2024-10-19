@@ -3,7 +3,5 @@ export interface CurrentUserInterface {
   email: string;    
   token: string;
   userName: string;
-  
-  // createdAt: string;
-  //updatedAt: string;
+  userId: string;
 }

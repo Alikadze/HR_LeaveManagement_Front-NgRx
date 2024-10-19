@@ -5,8 +5,10 @@ import { authActions } from '../store/actions';
 import { RegisterRequestInterface } from '../interfaces/registerRequest.interface';
 import { Router, RouterLink } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
-import { selectIsSubmitting } from '../store/reducers';
+import { selectIsSubmitting, selectValidationErrors } from '../store/reducers';
 import { AuthService } from '../services/auth.service';
+import { combineLatest } from 'rxjs';
+import { BackendErrorMessagesComponent } from "../../shared/components/backend-error-messages/backend-error-messages.component";
 
 @Component({
   selector: 'app-register',
@@ -14,14 +16,15 @@ import { AuthService } from '../services/auth.service';
   imports: [
     ReactiveFormsModule,
     RouterLink,
-    AsyncPipe
-  ],
+    AsyncPipe,
+    BackendErrorMessagesComponent
+],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
   store = inject(Store);
-  aurhService = inject(AuthService);
+  authService = inject(AuthService);
   router = inject(Router);
 
   form = new FormGroup({
@@ -31,29 +34,34 @@ export class RegisterComponent {
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', Validators.required),
   });
-
-  isSubmitting$ = this.store.select(selectIsSubmitting);
+   
+  data$ = combineLatest({
+    isSubmitting: this.store.select(selectIsSubmitting),
+    backendErrors: this.store.select(selectValidationErrors)
+  })
 
   onSubmit() {
-    console.log(this.form.value);
-
-    const {userName, email, password, firstName, lastName} = this.form.value as {userName: string, email: string, password: string, firstName: string, lastName: string};
-
-    userName.trim();
-    email.trim();
-    password.trim();
-
+    const { userName, email, password, firstName, lastName } = this.form.value as { 
+      userName: string, 
+      email: string, 
+      password: string, 
+      firstName: string, 
+      lastName: string 
+    };
+    
+    const trimmedUserName = userName.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    
     const request: RegisterRequestInterface = {
-      userName,
-      email,
-      password,
+      userName: trimmedUserName,
+      email: trimmedEmail,
+      password: trimmedPassword,
       firstName,
       lastName
-    }
+    };
 
-    this.store.dispatch(authActions.register({ request }));
-    this.aurhService.register(request).subscribe(res => console.log(res));
-    this.router.navigate(['/']);
+    this.store.dispatch(authActions.register({request}));
   }
 
 }
